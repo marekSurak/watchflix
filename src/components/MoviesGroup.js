@@ -3,7 +3,7 @@ import MovieCard from './MovieCard';
 
 /**
  * Represent group of movies characteristic 
- * by category in one line.
+ * by category on one line.
  * 
  * @function
  * @param {string} title title of group

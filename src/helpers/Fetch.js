@@ -37,4 +37,19 @@ const getListByGenre = (options = {}, callback = () => {}) => {
 		.then(data => callback(data.results))
 }
 
-export { getTrendingList, getListByGenre };
+/**
+ * Get data for movie detail.
+ * 
+ * @function
+ * @param {object} options request options
+ * @param {object} callback callback function
+ */
+const getMovieDetail = (options = {}, callback = () => {}) => {
+	const { movieId = '' } = options
+
+	fetch(`${BASE_URI}/movie/${movieId}?api_key=${API_KEY}`)
+		.then(response => response.json())
+		.then(data => callback(data))
+}
+
+export { getTrendingList, getListByGenre, getMovieDetail };
