@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: pages/Detail.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: pages/Detail.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
+import { Link } from "react-router-dom";
+
+import VideoPlayer from '../components/VideoPlayer';
+import Layout from "../components/Layout";
+import MovieRating from "../components/MovieRating";
+import { getMovieDetail } from "../helpers/Fetch";
+import { settings } from '../config/settings';
+import defaultPhoto from '../img/placeholder-image.png'
+
+import { makeStyles } from '@material-ui/core/styles';
+import Divider from '@material-ui/core/Divider';
+import ArrowBack from '@material-ui/icons/ArrowBackIosOutlined';
+import CloseIcon from '@material-ui/icons/CloseOutlined';
+import Button from '@material-ui/core/Button';
+import PlayArrowIcon from '@material-ui/icons/PlayArrow';
+
+/**
+ * Page of movie detail
+ * 
+ * @function
+ */
+const Detail = () => {
+	const [ movieData, setMovieData ] = useState({});
+	const [ playVideo, setVideoPlay ] = useState(false);
+
+	let { id } = useParams();
+
+	useEffect(() => {
+		getMovieDetail({ movieId: id }, (data) => setMovieData(data))
+	}, [id]);
+
+	const useStyles = makeStyles(_getStyles())
+	
+	const classes = useStyles();
+
+	const { 
+		original_title: originalTitle = '',
+		tagline = '',
+		overview = '',
+		poster_path: posterPath = '',
+		original_language: originalLanguage = '',
+		release_date: releaseDate = '',
+		genres = [],
+		vote_average: voteAvereage = ''
+	} = movieData;
+
+	const imageUrl = posterPath ? `${settings.api.IMAGE_URI}${posterPath}` : defaultPhoto;
+
+	return (
+		&lt;Layout>
+			&lt;div className={classes.wrapper}>
+				&lt;div className={classes.col}>
+					{_renderBasicInfo(originalTitle, tagline, overview, classes)}
+
+					&lt;Divider className={classes.divider} variant="middle" />
+					&lt;MovieRating value={voteAvereage} />
+
+					&lt;ul className={classes.metadata}>
+						&lt;li>
+							&lt;span className={classes.secondaryText}>Language: &lt;/span>
+							{originalLanguage}
+						&lt;/li>
+						&lt;li>
+							&lt;span className={classes.secondaryText}>Release date: &lt;/span>
+							{_renderReleaseDate(releaseDate)}
+						&lt;/li>
+						&lt;li>
+							&lt;span className={classes.secondaryText}>Genres: &lt;/span>
+							{_renderGenres(genres)}
+						&lt;/li>
+					&lt;/ul>
+
+					{_renderVideoPlayButton(classes, setVideoPlay)}
+				&lt;/div>
+				&lt;div className={classes.col}>
+					{_renderBreadCrumbs(classes)}
+					{_renderMoviePoster(classes, imageUrl)}
+				&lt;/div>
+			&lt;/div>
+			{playVideo &amp;&amp; _renderVideoPlayer(classes, () => setVideoPlay(false))}
+		&lt;/Layout>
+	)
+};
+
+	/**
+	 * Render list of movie genres.
+	 * 
+	 * @function
+	 * @private
+	 * @param {array} genres 
+	 */
+	const _renderGenres = (genres = []) => {
+		return genres.map((genre, index) => {
+			const isLast = index === genres.length - 1;
+
+			return (
+				&lt;span key={genre.id}>{genre.name}{isLast ? '' : ', '}&lt;/span>
+			)}
+		)
+	};
+
+	/**
+	 * Render date.
+	 * 
+	 * @function
+	 * @private
+	 * @param {object} date 
+	 */
+	const _renderReleaseDate = (date) => {
+		return new Date(date).toLocaleDateString()
+	}
+
+	/**
+	 * Render basic info movie.
+	 * 
+	 * @function
+	 * @private
+	 * @param {string} title 
+	 * @param {string} subtitle 
+	 * @param {string} desc 
+	 * @param {object} classes 
+	 */
+	const _renderBasicInfo = (title = '', subtitle = '', desc = '', classes = {}) => {
+		return (
+			&lt;>
+				&lt;h1>{title}&lt;/h1>
+				&lt;h4 className={classes.secondaryText}>{subtitle}&lt;/h4>
+				&lt;span>{desc}&lt;/span>
+			&lt;/>
+		)
+	}
+
+	/**
+	 * Render link back to homepage.
+	 * 
+	 * @function
+	 * @private
+	 * @param {object} classes 
+	 */
+	const _renderBreadCrumbs = (classes = {}) => {
+		return (
+			&lt;div className={classes.breadCrumbs}>
+				&lt;Link to="/" className={classes.link}>
+					&lt;ArrowBack fontSize="small" className={classes.breadCrumbIcon}/>
+					Back to list
+				&lt;/Link>
+			&lt;/div>
+		)
+	};
+
+	/**
+	 * Render popup with video player.
+	 * 
+	 * @function
+	 * @private
+	 * @param {object} classes 
+	 * @param {function} onClose 
+	 */
+	const _renderVideoPlayer = (classes = {}, onClose = () => {}) => {
+		return (
+			&lt;div className={classes.videoWrapper} onClick={() => onClose()}>
+				&lt;Button className={classes.videoButton} onClick={() => onClose()} title='close player'>
+					&lt;CloseIcon className={classes.videoIcon}/>
+				&lt;/Button>
+				&lt;div className={classes.videoContent} onClick={(e) => e.stopPropagation()}>
+					&lt;VideoPlayer className={classes.video}/>
+				&lt;/div>
+			&lt;/div>
+		)
+	};
+
+	/**
+	 * Render video play button.
+	 * 
+	 * @function
+	 * @private
+	 * @param {object} classes 
+	 * @param {function} setVideoPlay 
+	 */
+	const _renderVideoPlayButton = (classes = {}, setVideoPlay = () => {}) => {
+		return (
+			&lt;Button
+				className={classes.videoPlay}
+				variant="contained"
+				color="secondary"
+				onClick={() => setVideoPlay(true)} 
+				startIcon={&lt;PlayArrowIcon />}
+			>
+				Play video
+			&lt;/Button>
+		)
+	};
+
+	/**
+	 * Render movie poster.
+	 * 
+	 * @function
+	 * @private
+	 * @param {object} classes 
+	 * @param {string} imageUrl 
+	 */
+	const _renderMoviePoster = (classes = {}, imageUrl) => {
+		return (
+			&lt;img 
+				className={classes.poster}
+				src={imageUrl} 
+				alt='movie poster'
+			/>
+		)
+	};
+
+	/**
+	 * Return styles for detail.
+	 */
+	const _getStyles = () => {
+		return {
+			wrapper: {
+				display: 'flex',
+				justifyContent: 'space-evenly',
+				height: '100vh'
+			},
+			col: {
+				width: '40%',
+				verticalAlign: 'top',
+				lineHeight: '1.25'
+			},
+			link: {
+				color: 'inherit',
+				fontSize: '1rem',
+				'&amp;:hover': {
+					color: '#fafafa7a'
+				}
+			},
+			divider: {
+				backgroundColor: '#fff',
+				width: '70%',
+				margin: '3rem auto'
+			},
+			metadata: {
+				margin: '0',
+				padding: '1rem'
+			},
+			secondaryText: {
+				color: '#fafafa7a'
+			},
+			breadCrumbs: {
+				display: 'block',
+				marginBottom: '2rem'
+			},
+			breadCrumbIcon: {
+				verticalAlign: 'top'
+			},
+			poster: {
+				height: '20rem'
+			},
+			videoWrapper: {
+				zIndex: '1',
+				position: 'fixed',
+				overflow: 'hidden',
+				top: '0',
+				left: '0',
+				height: '100%',
+				width: '100%',
+				textAlign: 'center',
+				display: 'flex',
+				justifyContent: 'center',
+				alignItems: 'center',
+				backgroundColor: 'rgba(0, 0, 0, 0.95)'
+			},
+			videoContent: {
+				zIndex: '10',
+				display: 'flex',
+				height: '90%',
+				width: '90%',
+			},
+			video: {},
+			videoButton: {
+				position: 'fixed',
+				top: '2rem',
+				right: '1rem'
+			},
+			videoIcon: {
+				width: '2rem',
+				height: '2rem',
+				color: '#fafafa'
+			},
+			videoPlay: {
+				backgroundColor: '#b2102f',
+				'&amp;:hover': {
+					backgroundColor: '#920b25',
+				},
+				marginTop: '1rem'
+			}
+		}
+	}
+
+export default Detail;</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#_getStyles">_getStyles</a></li><li><a href="global.html#Detail">Detail</a></li><li><a href="global.html#getListByGenre">getListByGenre</a></li><li><a href="global.html#getMovieDetail">getMovieDetail</a></li><li><a href="global.html#getTrendingList">getTrendingList</a></li><li><a href="global.html#Layout">Layout</a></li><li><a href="global.html#List">List</a></li><li><a href="global.html#MovieCard">MovieCard</a></li><li><a href="global.html#MovieRating">MovieRating</a></li><li><a href="global.html#MoviesGroup">MoviesGroup</a></li><li><a href="global.html#settings">settings</a></li><li><a href="global.html#VideoPlayer">VideoPlayer</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.4</a> on Mon Jul 06 2020 09:05:51 GMT+0200 (GMT+02:00)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
