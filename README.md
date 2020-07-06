@@ -4,9 +4,9 @@ Applications for browing and watching movies.
 This application was made for 24i company. It took about 9 hours.
 
 ## Used packages
-[Material UI](https://material-ui.com/) for styling components.
-[React router](https://github.com/ReactTraining/react-router) for routing
-[Shaka player](https://github.com/google/shaka-player) video player
+[Material UI](https://material-ui.com/) for styling components<br />
+[React router](https://github.com/ReactTraining/react-router) for routing<br />
+[Shaka player](https://github.com/google/shaka-player) video player<br />
 
 ## Implementation
 
@@ -14,9 +14,9 @@ I implemented basic tasks such as landing page with list of movies with differen
 detail of a movie and video player. 
 
 ## Installation
-`npm install`
-`npm run start`
-`open localhost:3000`
+`npm install`<br />
+`npm run start`<br />
+`open localhost:3000`<br />
 
 
 ## Available Scripts
