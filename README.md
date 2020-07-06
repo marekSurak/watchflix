@@ -1,5 +1,24 @@
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+Applications for browing and watching movies.
+This application was made for 24i company. It took about 9 hours.
+
+## Used packages
+[Material UI](https://material-ui.com/) for styling components.
+[React router](https://github.com/ReactTraining/react-router) for routing
+[Shaka player](https://github.com/google/shaka-player) video player
+
+## Implementation
+
+I implemented basic tasks such as landing page with list of movies with different categories,
+detail of a movie and video player. 
+
+## Installation
+`npm install`
+`npm run start`
+`open localhost:3000`
+
+
 ## Available Scripts
 
 In the project directory, you can run:
