@@ -3,6 +3,8 @@ import React, { useState, useEffect } from 'react';
 import { getTrendingList, getListByGenre } from "../helpers/Fetch";
 import { settings } from '../config/settings';
 import MoviesGroup from '../components/MoviesGroup';
+import Layout from '../components/Layout';
+import { makeStyles } from '@material-ui/core/styles';
 
 /**
  * Landing page.
@@ -29,15 +31,26 @@ const List = () => {
 
 	}, []);
 
+	const useStyles = makeStyles({
+		title: {
+			fontSize: '3rem',
+			'&:first-letter': {
+				color: '#b2102f'
+			}
+		}
+	})
+
+	const classes = useStyles();
+
 	return (
-		<>
-			<h1>Watchflix</h1>
+		<Layout>
+			<h1 className={classes.title}>Watchflix</h1>
 
 			<MoviesGroup title='Popular TV movies' movies={trendingMovie}/>
 			<MoviesGroup title='Popular TV series' movies={trendingTV}/>
 			<MoviesGroup title='Family' movies={familyMovie}/>
 			<MoviesGroup title='Documentary' movies={documentMovie}/>
-		</>
+		</Layout>
 	)
 };
 
